@@ -1,35 +1,73 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Scanner;
 import Library.*;
 public class Main {
+    private static Connection conn;
+
     public static void main(String[] args) {
         try {
             // Initialize database connection
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_db", "root", "root");
-            Scanner ob=new Scanner(System.in);
-            // Initialize panels
-            Admin adminPanel = new Admin(conn);
-            User userPanel = new User(conn);
-            // Display panels
-            while(true){
-                System.out.println("------------------------");
-                System.out.println("1. Admin Panel");
-                System.out.println("2. User Panel");
-                System.out.println("3. Exit");
-                System.out.println("------------------------");
-                int n=ob.nextInt();
-                if(n==1)adminPanel.display();
-                else if(n==2)userPanel.display();
-                else if(n==3)break;
-                else{ System.out.println("Invalid Choice try Again");
-                    System.out.println("------------------------");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_db", "root", "root");
+
+            // Create the main frame
+
+            JFrame frame = new JFrame("Library Management System");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Set to full screen
+            JLabel headingLabel = new JLabel("LIBRARY MANAGEMENT SYSTEM");
+            headingLabel.setFont(new Font("Arial", Font.BOLD, 32));
+            // Main panel with centered layout for buttons
+            JPanel panel = new JPanel(new GridBagLayout());
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 10, 10, 10);
+            gbc.gridx = 0;
+            gbc.gridy = GridBagConstraints.RELATIVE;
+            panel.add(headingLabel, gbc);
+            // Admin Panel Button
+            JButton adminButton = new JButton("Admin Panel");
+            adminButton.setPreferredSize(new Dimension(200, 50));
+            adminButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new Admin(conn).setVisible(true);
                 }
-            }
-        }
-        catch (SQLException e) {
+            });
+            panel.add(adminButton, gbc);
+
+            // User Panel Button
+            JButton userButton = new JButton("User Panel");
+            userButton.setPreferredSize(new Dimension(200, 50));
+            userButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new User(conn).setVisible(true);
+                }
+            });
+            panel.add(userButton, gbc);
+
+            // Exit Button
+            JButton exitButton = new JButton("Exit");
+            exitButton.setPreferredSize(new Dimension(200, 50));
+            exitButton.addActionListener(e -> System.exit(0));
+            panel.add(exitButton, gbc);
+
+            // Add the panel to the frame
+            frame.add(panel);
+            frame.setVisible(true);
+        } catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Database connection failed.");
         }
     }
 }
+
+// Admin Panel class
+
+
+// User Panel class
